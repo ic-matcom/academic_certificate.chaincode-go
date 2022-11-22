@@ -111,8 +111,8 @@ func ValidateID(codAsset, iD string) error {
 // CompositeKeyFromID
 //
 // Create composite key from an ID:
-// 	ID format: 			COD + YEAR +  MONTH + DAY + TIME
-// 	CompositeKey format: objectType +  MONTH + DAY + TIME
+// 	ID format: 			COD + YEAR +  MONTH + DAY + TIME (hour+minute+second)
+// 	CompositeKey format: objectType +  MONTH + DAY + TIME (hour+minute+second)
 //
 // 	note: the objectType = COD is assumed
 func CompositeKeyFromID(stub shim.ChaincodeStubInterface, objectType string, assetID string) (string, error) {
