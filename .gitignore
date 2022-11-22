@@ -42,3 +42,4 @@ vendor/*
 *.tgz
 crypto/*.pem
 
+/academic_certificates
