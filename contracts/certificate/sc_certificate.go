@@ -63,7 +63,7 @@ func (s *ContractCertificate) InitLedger(ctx contractapi.TransactionContextInter
 	}
 
 	for i, asset := range assets {
-		key, err := ctx.GetStub().CreateCompositeKey(lus.CodCert, []string{"2022", "11", "22", "10302", string(i)})
+		key, err := ctx.GetStub().CreateCompositeKey(lus.CodCert, []string{"2022", "11", "22", "10302", string(rune(i + 1))})
 		if err != nil {
 			return err
 		}
