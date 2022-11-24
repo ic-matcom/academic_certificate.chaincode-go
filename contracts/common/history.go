@@ -1,8 +1,8 @@
 package common
 
 import (
-	lus "academic_certificates/libutils"
 	"github.com/hyperledger/fabric-contract-api-go/contractapi"
+	lus "github.com/ic-matcom/academic_certificate.chaincode-go/libutils"
 )
 
 func (cio *ContractCommon) GetHistory(ctx contractapi.TransactionContextInterface, request *lus.GetHistoryRequest) (lus.HistoryQueryResponse, error) {

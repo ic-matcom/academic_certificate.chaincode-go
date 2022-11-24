@@ -3,9 +3,9 @@ package certificate
 import (
 	"fmt"
 
-	lus "academic_certificates/libutils"
 	"encoding/json"
 	"github.com/hyperledger/fabric-contract-api-go/contractapi"
+	lus "github.com/ic-matcom/academic_certificate.chaincode-go/libutils"
 )
 
 // ContractCertificate provides functions for managing an asset

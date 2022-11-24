@@ -1,12 +1,12 @@
 package main
 
 import (
-	"academic_certificates/contracts/certificate"
-	"academic_certificates/contracts/common"
-	lus "academic_certificates/libutils"
 	"fmt"
 	"github.com/hyperledger/fabric-chaincode-go/shim"
 	"github.com/hyperledger/fabric-contract-api-go/contractapi"
+	"github.com/ic-matcom/academic_certificate.chaincode-go/contracts/certificate"
+	"github.com/ic-matcom/academic_certificate.chaincode-go/contracts/common"
+	lus "github.com/ic-matcom/academic_certificate.chaincode-go/libutils"
 	"io/ioutil"
 	"log"
 	"os"

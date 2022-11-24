@@ -1,9 +1,9 @@
 package common
 
 import (
-	lus "academic_certificates/libutils"
 	"fmt"
 	"github.com/hyperledger/fabric-contract-api-go/contractapi"
+	lus "github.com/ic-matcom/academic_certificate.chaincode-go/libutils"
 	jsoniter "github.com/json-iterator/go"
 )
 
