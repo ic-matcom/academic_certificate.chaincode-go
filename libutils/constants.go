@@ -17,6 +17,8 @@ const (
 	ErrorUnmarshal                = "unmarshal error %s"
 	ErrorMarshal                  = "marshal error %s"
 	ErrorGenerateKey              = "error generating key"
+	ErrorInconsistentStatus       = "validators data is inconsistent with info from status"
+	ErrorInconsistentInvalidation = "if asset is invalid it needs a description why"
 )
 
 // Each code must be 4 characters
