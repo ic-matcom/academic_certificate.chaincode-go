@@ -24,3 +24,9 @@ const (
 const (
 	CodCert = "CERT"
 )
+
+// contract name
+const (
+	ContractNameCommon      = "common"
+	ContractNameCertificate = "certificate"
+)

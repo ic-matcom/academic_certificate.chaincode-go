@@ -3,6 +3,7 @@ package lib_utils
 import (
 	"crypto/rand"
 	"fmt"
+	"github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/hyperledger/fabric-chaincode-go/shim"
 	"github.com/hyperledger/fabric-contract-api-go/contractapi"
 	"io"
@@ -11,6 +12,11 @@ import (
 	"strings"
 	"time"
 )
+
+func GetTimestampRFC3339(timestamp *timestamp.Timestamp) string {
+	tm := time.Unix(timestamp.Seconds, int64(timestamp.Nanos))
+	return tm.Format(time.RFC3339)
+}
 
 func UnknownTransactionHandler(ctx contractapi.TransactionContextInterface) error {
 	fcn, args := ctx.GetStub().GetFunctionAndParameters()

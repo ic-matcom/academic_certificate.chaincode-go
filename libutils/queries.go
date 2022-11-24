@@ -7,6 +7,27 @@ import (
 	"github.com/hyperledger/fabric-contract-api-go/contractapi"
 )
 
+type GetHistoryRequest struct {
+	ID      string `json:"id"`
+	DocType string `json:"docType"`
+}
+
+type HistoryAssetPayload struct {
+	TxID  string                 `json:"txID"`
+	Time  string                 `json:"time"`
+	Asset map[string]interface{} `json:"asset"`
+}
+
+type HistoryQueryResponse struct {
+	Response []HistoryAssetPayload `json:"response"`
+}
+
+type RichQuerySelector struct {
+	QueryString map[string]interface{} `json:"queryString"`
+	PageSize    int                    `json:"pageSize"`
+	Bookmark    string                 `json:"bookmark,omitempty" metadata:",optional"`
+}
+
 // PaginatedQueryResponse structure used for returning paginated query results and metadata
 type PaginatedQueryResponse struct {
 	Records             []interface{} `json:"records"` // fabric-contract-api-go not support return []*interfaces{} type

@@ -2,6 +2,8 @@ package main
 
 import (
 	"academic_certificates/contracts/certificate"
+	"academic_certificates/contracts/common"
+	lus "academic_certificates/libutils"
 	"fmt"
 	"github.com/hyperledger/fabric-chaincode-go/shim"
 	"github.com/hyperledger/fabric-contract-api-go/contractapi"
@@ -23,16 +25,30 @@ func main() {
 		Address: os.Getenv("CHAINCODE_SERVER_ADDRESS"),
 	}
 
-	assetChaincode, err := contractapi.NewChaincode(&certificate.ContractCertificate{})
+	contractCommon := new(common.ContractCommon)
+	contractCommon.Name = lus.ContractNameCommon
+	contractCommon.Info.Version = "0.0.1"
+	contractCommon.UnknownTransaction = lus.UnknownTransactionHandler
+
+	contractCert := new(certificate.ContractCertificate)
+	contractCert.Name = lus.ContractNameCertificate
+	contractCert.Info.Version = "0.0.1"
+	contractCert.UnknownTransaction = lus.UnknownTransactionHandler
+
+	chaincode, err := contractapi.NewChaincode(contractCommon, contractCert)
 
 	if err != nil {
-		log.Panicf("error create asset-transfer-basic chaincode: %s", err)
+		panic(fmt.Sprintf("Error creating chaincode. %s", err.Error()))
 	}
+
+	chaincode.Info.Title = "CertificateChaincode"
+	chaincode.Info.Version = "0.0.2"
+	chaincode.DefaultContract = contractCert.GetName() // default contract
 
 	server := &shim.ChaincodeServer{
 		CCID:     config.CCID,
 		Address:  config.Address,
-		CC:       assetChaincode,
+		CC:       chaincode,
 		TLSProps: getTLSProperties(),
 	}
 

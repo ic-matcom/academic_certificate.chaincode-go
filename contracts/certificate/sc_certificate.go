@@ -82,8 +82,8 @@ func (s *ContractCertificate) InitLedger(ctx contractapi.TransactionContextInter
 	return nil
 }
 
-// CreateAsset issues a new asset to the world state with given details.
-func (s *ContractCertificate) CreateAsset(ctx contractapi.TransactionContextInterface, id, color string, size int, owner string) error {
+// CreateAssetOld issues a new asset to the world state with given details.
+func (s *ContractCertificate) CreateAssetOld(ctx contractapi.TransactionContextInterface, id, color string, size int, owner string) error {
 	composeKey, cert, err := lus.ExistsAssetFromId(ctx.GetStub(), lus.CodCert, id)
 	if err != nil {
 		return err
@@ -108,8 +108,8 @@ func (s *ContractCertificate) CreateAsset(ctx contractapi.TransactionContextInte
 	return ctx.GetStub().PutState(composeKey, assetJSON)
 }
 
-// CreateAssetO issues a new asset to the world state with given details.
-func (s *ContractCertificate) CreateAssetO(ctx contractapi.TransactionContextInterface, request *Asset) error {
+// CreateAsset issues a new asset to the world state with given details.
+func (s *ContractCertificate) CreateAsset(ctx contractapi.TransactionContextInterface, request *Asset) error {
 	composeKey, cert, err := lus.ExistsAssetFromId(ctx.GetStub(), lus.CodCert, request.ID)
 	if err != nil {
 		return err
