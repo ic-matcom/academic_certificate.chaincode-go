@@ -43,4 +43,3 @@ vendor/*
 crypto/*.pem
 
 /academic_certificates
-/academic_certificate.chaincode-go

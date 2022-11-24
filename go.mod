@@ -1,4 +1,4 @@
-module github.com/ic-matcom/academic_certificate.chaincode-go
+module academic_certificates
 
 go 1.18
 
