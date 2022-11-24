@@ -213,38 +213,6 @@ func (s *ContractCertificate) TransferAsset(ctx contractapi.TransactionContextIn
 	return oldOwner, nil
 }
 
-// GetAllAssets returns all assets found in world state
-func (s *ContractCertificate) GetAllAssets(ctx contractapi.TransactionContextInterface) ([]QueryResult, error) {
-	// range query with empty string for startKey and endKey does an open-ended query of all assets in the chaincode namespace.
-	resultsIterator, err := ctx.GetStub().GetStateByRange("", "")
-
-	if err != nil {
-		return nil, err
-	}
-	defer resultsIterator.Close()
-
-	var results []QueryResult
-
-	for resultsIterator.HasNext() {
-		queryResponse, err := resultsIterator.Next()
-
-		if err != nil {
-			return nil, err
-		}
-
-		var asset Asset
-		err = json.Unmarshal(queryResponse.Value, &asset)
-		if err != nil {
-			return nil, err
-		}
-
-		queryResult := QueryResult{Key: queryResponse.Key, Record: &asset}
-		results = append(results, queryResult)
-	}
-
-	return results, nil
-}
-
 func (s *ContractCertificate) GetEvaluateTransactions() []string {
 	return []string{"CreateAssetO"}
 }
