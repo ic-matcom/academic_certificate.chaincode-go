@@ -25,7 +25,8 @@ const (
 // Each code must be 4 characters
 
 const (
-	CodCert = "CERT"
+	CodCert        = "CERT"
+	DocTypeDeleted = "DELETED"
 )
 
 // contract name
