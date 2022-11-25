@@ -14,16 +14,6 @@ type ContractCertificate struct {
 	contractapi.Contract
 }
 
-type GetRequest struct {
-	ID string `json:"id"`
-}
-
-// QueryResult structure used for handling result of query
-type QueryResult struct {
-	Key    string `json:"Key"`
-	Record *Asset
-}
-
 // InitLedger adds a base set of cars to the ledger
 func (s *ContractCertificate) InitLedger(ctx contractapi.TransactionContextInterface) error {
 	var assets []Asset
@@ -81,43 +71,6 @@ func (s *ContractCertificate) InitLedger(ctx contractapi.TransactionContextInter
 	}
 
 	return nil
-}
-
-// CreateAssetOld issues a new asset to the world state with given details.
-func (s *ContractCertificate) CreateAssetOld(ctx contractapi.TransactionContextInterface, id string,
-	certification string, goldCertificate bool, emitter string, accredited string, date string, createdBy,
-	facultyVolumeFolio string, universityVolumeFolio string) error {
-	compositeKey, cert, err := lus.ExistsAssetFromId(ctx.GetStub(), lus.CodCert, id)
-	if err != nil {
-		return err
-	} else if cert != nil {
-		return fmt.Errorf(lus.ErrorAlreadyExistInState, id)
-	}
-
-	asset := Asset{
-		DocType:               lus.CodCert,
-		ID:                    id,
-		Certification:         certification,
-		GoldCertificate:       goldCertificate,
-		Emitter:               emitter,
-		Accredited:            accredited,
-		Date:                  date,
-		CreatedBy:             createdBy,
-		SecretaryValidating:   "",
-		DeanValidating:        "",
-		RectorValidating:      "",
-		FacultyVolumeFolio:    facultyVolumeFolio,
-		UniversityVolumeFolio: universityVolumeFolio,
-		InvalidReason:         "",
-		Status:                New,
-	}
-
-	assetJSON, err := json.Marshal(asset)
-	if err != nil {
-		return err
-	}
-
-	return ctx.GetStub().PutState(compositeKey, assetJSON)
 }
 
 // CreateAsset issues a new asset to the world state with given details.
@@ -289,5 +242,5 @@ func (s *ContractCertificate) DeleteAsset(ctx contractapi.TransactionContextInte
 }
 
 func (s *ContractCertificate) GetEvaluateTransactions() []string {
-	return []string{"CreateAssetO"}
+	return []string{"ReadAsset"}
 }

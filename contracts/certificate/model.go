@@ -47,6 +47,10 @@ type Asset struct {
 	Status                StateValidation `json:"certificate_status"`
 }
 
+type GetRequest struct {
+	ID string `json:"id"`
+}
+
 type ValidateAsset struct {
 	ID         string        `json:"ID"`
 	Validator  string        `json:"validator"`
