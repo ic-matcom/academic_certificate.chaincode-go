@@ -49,3 +49,7 @@ func (cc *ContractCommon) QueryAssetsWithPagination(ctx contractapi.TransactionC
 
 	return lus.GetQueryResultForQueryStringWithPagination(ctx, queryString, int32(request.PageSize), request.Bookmark)
 }
+
+func (cc *ContractCommon) GetEvaluateTransactions() []string {
+	return []string{"QueryAssetsBy", "QueryAssetsWithPagination", "GetHistory"}
+}
