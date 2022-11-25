@@ -5,40 +5,13 @@ import (
 
 	lus "academic_certificates/libutils"
 	"encoding/json"
+
 	"github.com/hyperledger/fabric-contract-api-go/contractapi"
 )
 
 // ContractCertificate provides functions for managing an asset
 type ContractCertificate struct {
 	contractapi.Contract
-}
-
-type StateValidation uint
-
-const (
-	Invalid StateValidation = iota
-	One
-	Two
-	Three
-)
-
-//Auxiliary Functions
-func (state StateValidation) String() string {
-	names := []string{"Invalid", "One", "Two", "Three"}
-	if state < Invalid || state > Three {
-		return "unknown"
-	}
-	return names[state]
-}
-
-// Asset describes basic details of what makes up a simple asset
-type Asset struct {
-	DocType       string          `json:"docType"`
-	ID            string          `json:"ID"`
-	Color         string          `json:"color"`
-	Size          int             `json:"size"`
-	Owner         string          `json:"owner"`
-	OperationType StateValidation `json:"operationType"`
 }
 
 type GetRequest struct {
@@ -53,13 +26,40 @@ type QueryResult struct {
 
 // InitLedger adds a base set of cars to the ledger
 func (s *ContractCertificate) InitLedger(ctx contractapi.TransactionContextInterface) error {
-	assets := []Asset{
-		{DocType: lus.CodCert, ID: "asset1", Color: "blue", Size: 5, Owner: "Tomoko", OperationType: One},
-		{DocType: lus.CodCert, ID: "asset2", Color: "red", Size: 5, Owner: "Brad", OperationType: Invalid},
-		{DocType: lus.CodCert, ID: "asset3", Color: "green", Size: 10, Owner: "Jin Soo", OperationType: Three},
-		{DocType: lus.CodCert, ID: "asset4", Color: "yellow", Size: 10, Owner: "Max", OperationType: One},
-		{DocType: lus.CodCert, ID: "asset5", Color: "black", Size: 15, Owner: "Adriana", OperationType: Two},
-		{DocType: lus.CodCert, ID: "asset6", Color: "white", Size: 15, Owner: "Michel", OperationType: One},
+	var assets []Asset
+	for i := 0; i < 10; i++ {
+		assets = append(assets, Asset{
+			DocType:               lus.CodCert,
+			Certification:         "Licenciado en Derecho",
+			GoldCertificate:       false,
+			Emitter:               "Universidad de La Habana",
+			Accredited:            fmt.Sprintf("Joe Doe %d", i),
+			Date:                  "8 de Noviembre del 2010",
+			SecretaryValidating:   "Mirtha Guerra",
+			DeanValidating:        "",
+			RectorValidating:      "",
+			FacultyVolumeFolio:    "254,136",
+			UniversityVolumeFolio: "158,187",
+			InvalidReason:         "",
+			Status:                SignedS,
+		})
+	}
+	for i := 10; i < 20; i++ {
+		assets = append(assets, Asset{
+			DocType:               lus.CodCert,
+			Certification:         "Licenciado en Química",
+			GoldCertificate:       true,
+			Emitter:               "Universidad de La Habana",
+			Accredited:            fmt.Sprintf("Joe Doe %d", i),
+			Date:                  "10 de Julio del 2018",
+			SecretaryValidating:   "Manuela Azurra",
+			DeanValidating:        "Pedro Navaja",
+			RectorValidating:      "",
+			FacultyVolumeFolio:    "254, 333",
+			UniversityVolumeFolio: "158,781",
+			InvalidReason:         "",
+			Status:                SignedSD,
+		})
 	}
 
 	for i, asset := range assets {
@@ -67,6 +67,7 @@ func (s *ContractCertificate) InitLedger(ctx contractapi.TransactionContextInter
 		if err != nil {
 			return err
 		}
+		asset.ID = key
 
 		assetJSON, err := json.Marshal(asset)
 		if err != nil {
@@ -83,7 +84,9 @@ func (s *ContractCertificate) InitLedger(ctx contractapi.TransactionContextInter
 }
 
 // CreateAssetOld issues a new asset to the world state with given details.
-func (s *ContractCertificate) CreateAssetOld(ctx contractapi.TransactionContextInterface, id, color string, size int, owner string) error {
+func (s *ContractCertificate) CreateAssetOld(ctx contractapi.TransactionContextInterface, id string,
+	certification string, goldCertificate bool, emitter string, accredited string, date string, createdBy,
+	facultyVolumeFolio string, universityVolumeFolio string) error {
 	composeKey, cert, err := lus.ExistsAssetFromId(ctx.GetStub(), lus.CodCert, id)
 	if err != nil {
 		return err
@@ -92,12 +95,21 @@ func (s *ContractCertificate) CreateAssetOld(ctx contractapi.TransactionContextI
 	}
 
 	asset := Asset{
-		DocType:       lus.CodCert,
-		ID:            id,
-		Color:         color,
-		Size:          size,
-		Owner:         owner,
-		OperationType: One,
+		DocType:               lus.CodCert,
+		ID:                    id,
+		Certification:         certification,
+		GoldCertificate:       goldCertificate,
+		Emitter:               emitter,
+		Accredited:            accredited,
+		Date:                  date,
+		CreatedBy:             createdBy,
+		SecretaryValidating:   "",
+		DeanValidating:        "",
+		RectorValidating:      "",
+		FacultyVolumeFolio:    facultyVolumeFolio,
+		UniversityVolumeFolio: universityVolumeFolio,
+		InvalidReason:         "",
+		Status:                New,
 	}
 
 	assetJSON, err := json.Marshal(asset)
@@ -118,12 +130,21 @@ func (s *ContractCertificate) CreateAsset(ctx contractapi.TransactionContextInte
 	}
 
 	asset := Asset{
-		DocType:       lus.CodCert,
-		ID:            request.ID,
-		Color:         request.Color,
-		Size:          request.Size,
-		Owner:         request.Owner,
-		OperationType: request.OperationType,
+		DocType:               lus.CodCert,
+		ID:                    request.ID,
+		Certification:         request.Certification,
+		GoldCertificate:       request.GoldCertificate,
+		Emitter:               request.Emitter,
+		Accredited:            request.Accredited,
+		Date:                  request.Date,
+		CreatedBy:             request.CreatedBy,
+		SecretaryValidating:   "",
+		DeanValidating:        "",
+		RectorValidating:      "",
+		FacultyVolumeFolio:    request.FacultyVolumeFolio,
+		UniversityVolumeFolio: request.UniversityVolumeFolio,
+		InvalidReason:         "",
+		Status:                New,
 	}
 
 	assetJSON, err := json.Marshal(asset)
@@ -160,15 +181,41 @@ func (s *ContractCertificate) UpdateAsset(ctx contractapi.TransactionContextInte
 	} else if assetJSON == nil {
 		return fmt.Errorf(lus.ErrorNotExistInState, request.ID)
 	}
+	// Check new params of the asset consistency
 
+	// If certificate is valid then it should have the 3 signatures
+	if (request.Status == Valid) && (request.SecretaryValidating == "" || request.DeanValidating == "" || request.RectorValidating == "") {
+		return fmt.Errorf(lus.ErrorInconsistentStatus)
+	}
+	// If certificate is SignedSD then it should have Secretary and Dean signatures
+	if (request.Status == SignedSD) && (request.SecretaryValidating == "" || request.DeanValidating == "") {
+		return fmt.Errorf(lus.ErrorInconsistentStatus)
+	}
+	// If certificate is SignedSD then it should have Secretary and Dean signatures
+	if (request.Status == SignedS) && (request.SecretaryValidating == "") {
+		return fmt.Errorf(lus.ErrorInconsistentStatus)
+	}
+	// If certificate is revoked then it should have a revoked reason
+	if (request.Status == Invalid) && (request.InvalidReason == "") {
+		return fmt.Errorf(lus.ErrorInconsistentInvalidation)
+	}
 	// overwritting original asset with new asset
 	asset := Asset{
-		DocType:       lus.CodCert,
-		ID:            request.ID,
-		Color:         request.Color,
-		Size:          request.Size,
-		Owner:         request.Owner,
-		OperationType: request.OperationType,
+		DocType:               lus.CodCert,
+		ID:                    request.ID,
+		Certification:         request.Certification,
+		GoldCertificate:       request.GoldCertificate,
+		Emitter:               request.Emitter,
+		Accredited:            request.Accredited,
+		Date:                  request.Date,
+		CreatedBy:             request.CreatedBy,
+		SecretaryValidating:   request.SecretaryValidating,
+		DeanValidating:        request.DeanValidating,
+		RectorValidating:      request.RectorValidating,
+		FacultyVolumeFolio:    request.FacultyVolumeFolio,
+		UniversityVolumeFolio: request.UniversityVolumeFolio,
+		InvalidReason:         request.InvalidReason,
+		Status:                request.Status,
 	}
 
 	assetJSON, err = json.Marshal(asset)
@@ -177,6 +224,42 @@ func (s *ContractCertificate) UpdateAsset(ctx contractapi.TransactionContextInte
 	}
 
 	return ctx.GetStub().PutState(composeKey, assetJSON)
+}
+
+// ValidateAsset Validate an existing asset in the world state with provided parameters.
+func (s *ContractCertificate) ValidateAsset(ctx contractapi.TransactionContextInterface, request *ValidateAsset) error {
+	asset, err := s.ReadAsset(ctx, GetRequest{ID: request.ID})
+	if err != nil {
+		return err
+	}
+
+	if request.ValidatorT == Secretary && asset.Status == New {
+		asset.SecretaryValidating = request.Validator
+		asset.Status = SignedS
+	} else if request.ValidatorT == Dean && asset.Status == SignedS {
+		asset.SecretaryValidating = request.Validator
+		asset.Status = SignedSD
+	} else if request.ValidatorT == Rector && asset.Status == Valid {
+		asset.SecretaryValidating = request.Validator
+		asset.Status = SignedSD
+	} else {
+		return fmt.Errorf(lus.ErrorInconsistentValidation)
+	}
+
+	return s.UpdateAsset(ctx, asset)
+}
+
+// InvalidateAsset Invalidate an existing asset in the world state and insert the reason.
+func (s *ContractCertificate) InvalidateAsset(ctx contractapi.TransactionContextInterface, request *InvalidateAsset) error {
+	asset, err := s.ReadAsset(ctx, GetRequest{ID: request.ID})
+	if err != nil {
+		return err
+	}
+
+	asset.Status = Invalid
+	asset.InvalidReason = request.Description
+
+	return s.UpdateAsset(ctx, asset)
 }
 
 // DeleteAsset deletes an given asset from the world state.
@@ -188,29 +271,6 @@ func (s *ContractCertificate) DeleteAsset(ctx contractapi.TransactionContextInte
 		return fmt.Errorf(lus.ErrorNotExistInState, request.ID)
 	}
 	return ctx.GetStub().DelState(composeKey)
-}
-
-// TransferAsset updates the owner field of asset with given id in world state, and returns the old owner.
-func (s *ContractCertificate) TransferAsset(ctx contractapi.TransactionContextInterface, id string, newOwner string) (string, error) {
-	asset, err := s.ReadAsset(ctx, GetRequest{ID: id})
-	if err != nil {
-		return "", err
-	}
-
-	oldOwner := asset.Owner
-	asset.Owner = newOwner
-
-	assetJSON, err := json.Marshal(asset)
-	if err != nil {
-		return "", err
-	}
-
-	err = ctx.GetStub().PutState(id, assetJSON)
-	if err != nil {
-		return "", err
-	}
-
-	return oldOwner, nil
 }
 
 func (s *ContractCertificate) GetEvaluateTransactions() []string {
