@@ -226,6 +226,29 @@ func (s *ContractCertificate) UpdateAsset(ctx contractapi.TransactionContextInte
 	return ctx.GetStub().PutState(composeKey, assetJSON)
 }
 
+// ValidateAsset Validate an existing asset in the world state with provided parameters.
+func (s *ContractCertificate) ValidateAsset(ctx contractapi.TransactionContextInterface, request *ValidateAsset) error {
+	asset, err := s.ReadAsset(ctx, GetRequest{ID: request.ID})
+	if err != nil {
+		return err
+	}
+
+	if request.ValidatorT == Secretary && asset.Status == New {
+		asset.SecretaryValidating = request.Validator
+		asset.Status = SignedS
+	} else if request.ValidatorT == Dean && asset.Status == SignedS {
+		asset.SecretaryValidating = request.Validator
+		asset.Status = SignedSD
+	} else if request.ValidatorT == Rector && asset.Status == Valid {
+		asset.SecretaryValidating = request.Validator
+		asset.Status = SignedSD
+	} else {
+		return fmt.Errorf(lus.ErrorInconsistentValidation)
+	}
+
+	return s.UpdateAsset(ctx, asset)
+}
+
 // DeleteAsset deletes an given asset from the world state.
 func (s *ContractCertificate) DeleteAsset(ctx contractapi.TransactionContextInterface, request GetRequest) error {
 	composeKey, assetJSON, err := lus.ExistsAssetFromId(ctx.GetStub(), lus.CodCert, request.ID)
