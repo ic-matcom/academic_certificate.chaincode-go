@@ -249,6 +249,19 @@ func (s *ContractCertificate) ValidateAsset(ctx contractapi.TransactionContextIn
 	return s.UpdateAsset(ctx, asset)
 }
 
+// ValidateAsset Validate an existing asset in the world state with provided parameters.
+func (s *ContractCertificate) InvalidateAsset(ctx contractapi.TransactionContextInterface, request *InvalidateAsset) error {
+	asset, err := s.ReadAsset(ctx, GetRequest{ID: request.ID})
+	if err != nil {
+		return err
+	}
+
+	asset.Status = Invalid
+	asset.InvalidReason = request.Description
+
+	return s.UpdateAsset(ctx, asset)
+}
+
 // DeleteAsset deletes an given asset from the world state.
 func (s *ContractCertificate) DeleteAsset(ctx contractapi.TransactionContextInterface, request GetRequest) error {
 	composeKey, assetJSON, err := lus.ExistsAssetFromId(ctx.GetStub(), lus.CodCert, request.ID)

@@ -52,3 +52,8 @@ type ValidateAsset struct {
 	Validator  string        `json:"validator"`
 	ValidatorT ValidatorType `json:"validator_type"`
 }
+
+type InvalidateAsset struct {
+	ID          string `json:"ID"`
+	Description string `json:"description"`
+}
