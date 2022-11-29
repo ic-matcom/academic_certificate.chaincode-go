@@ -75,7 +75,7 @@ func (s *ContractCertificate) InitLedger(ctx contractapi.TransactionContextInter
 
 // CreateAsset issues a new asset to the world state with given details.
 func (s *ContractCertificate) CreateAsset(ctx contractapi.TransactionContextInterface, request *Asset) error {
-	compositeKey, cert, err := lus.ExistsAssetFromId(ctx.GetStub(), lus.CodCert, request.ID)
+	compositeKey, _, cert, err := lus.ExistsAssetFromId(ctx.GetStub(), lus.CodCert, request.ID)
 	if err != nil {
 		return err
 	} else if cert != nil {
@@ -110,7 +110,7 @@ func (s *ContractCertificate) CreateAsset(ctx contractapi.TransactionContextInte
 
 // ReadAsset returns the asset stored in the world state with given id.
 func (s *ContractCertificate) ReadAsset(ctx contractapi.TransactionContextInterface, request GetRequest) (*Asset, error) {
-	_, assetJSON, err := lus.ExistsAssetFromId(ctx.GetStub(), lus.CodCert, request.ID)
+	_, _, assetJSON, err := lus.ExistsAssetFromId(ctx.GetStub(), lus.CodCert, request.ID)
 	if err != nil {
 		return nil, err
 	} else if assetJSON == nil {
@@ -128,7 +128,7 @@ func (s *ContractCertificate) ReadAsset(ctx contractapi.TransactionContextInterf
 
 // UpdateAsset updates an existing asset in the world state with provided parameters.
 func (s *ContractCertificate) UpdateAsset(ctx contractapi.TransactionContextInterface, request *Asset) error {
-	compositeKey, assetJSON, err := lus.ExistsAssetFromId(ctx.GetStub(), lus.CodCert, request.ID)
+	compositeKey, _, assetJSON, err := lus.ExistsAssetFromId(ctx.GetStub(), lus.CodCert, request.ID)
 	if err != nil {
 		return err
 	} else if assetJSON == nil {
@@ -217,19 +217,19 @@ func (s *ContractCertificate) InvalidateAsset(ctx contractapi.TransactionContext
 
 // DeleteAsset deletes an given asset from the world state.
 func (s *ContractCertificate) DeleteAsset(ctx contractapi.TransactionContextInterface, request GetRequest) error {
-	compositeKey, assetJSON, err := lus.ExistsAssetFromId(ctx.GetStub(), lus.CodCert, request.ID)
+	compositeKey, responseKey, assetJSON, err := lus.ExistsAssetFromId(ctx.GetStub(), lus.CodCert, request.ID)
 	if err != nil {
 		return err
 	} else if assetJSON == nil {
 		return fmt.Errorf(lus.ErrorNotExistInState, request.ID)
 	}
 
-	compositeKeyDeleted, err := ctx.GetStub().CreateCompositeKey(lus.DocTypeDeleted, []string{compositeKey})
+	compositeKeyDeleted, err := lus.CreateCompositeKeyToDelete(ctx.GetStub(), lus.CodCert, responseKey)
 	if err != nil {
 		return err
-	} else if compositeKeyDeleted == "" {
-		return fmt.Errorf("error creating compound key for: %v", compositeKey)
 	}
+
+	fmt.Println("--> 4", compositeKey)
 
 	//  Save index entry to world state. Only the key name is needed, no need to store a duplicate copy of the asset.
 	//  Note - passing a 'nil' value will effectively delete the key from state, therefore we pass null character as value
@@ -237,6 +237,8 @@ func (s *ContractCertificate) DeleteAsset(ctx contractapi.TransactionContextInte
 	if err != nil {
 		return fmt.Errorf("failed to put to world state: %v", err)
 	}
+
+	fmt.Println("--> end", compositeKeyDeleted)
 
 	return ctx.GetStub().DelState(compositeKey)
 }

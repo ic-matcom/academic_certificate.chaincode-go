@@ -113,17 +113,17 @@ func GetState(stub shim.ChaincodeStubInterface, key string) ([]byte, error) {
 //		(compositeKey, nil, err). Unable to interact with world state. Asset does not exist in ledger
 //		(compositeKey, nil , nil). Asset does not exist in ledger.
 //		(compositeKey, assetByte, nil). Asset exists in ledger.
-func ExistsAssetFromId(stub shim.ChaincodeStubInterface, objectType string, assetID string) (string, []byte, error) {
-	compositeKey, err := CompositeKeyFromID(stub, objectType, assetID)
+func ExistsAssetFromId(stub shim.ChaincodeStubInterface, objectType string, assetID string) (string, *KeyResponse, []byte, error) {
+	compositeKey, responseKey, err := CompositeKeyFromID(stub, objectType, assetID)
 	if err != nil {
-		return "", nil, err
+		return "", nil, nil, err
 	}
-	AssetAsBytes, err := stub.GetState(compositeKey)
+	asBytes, err := stub.GetState(compositeKey)
 	if err != nil {
-		return compositeKey, nil, fmt.Errorf("failed to get asset in the world state: %v", err)
+		return compositeKey, responseKey, nil, fmt.Errorf("failed to get asset in the world state: %v", err)
 	}
-	if AssetAsBytes == nil {
-		return compositeKey, nil, nil
+	if asBytes == nil {
+		return compositeKey, responseKey, nil, nil
 	}
-	return compositeKey, AssetAsBytes, nil
+	return compositeKey, responseKey, asBytes, nil
 }
