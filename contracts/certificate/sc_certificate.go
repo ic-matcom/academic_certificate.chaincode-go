@@ -58,9 +58,9 @@ func (s *ContractCertificate) InitLedger(ctx contractapi.TransactionContextInter
 
 		var idSlice = make([]string, 0)
 		if i < 9 {
-			idSlice = []string{"2022", "11", "22", "10300", strconv.Itoa(i + 1)}
+			idSlice = []string{lus.CodCert, "2022", "11", "22", "10300", strconv.Itoa(i + 1)}
 		} else {
-			idSlice = []string{"2022", "11", "22", "1030", strconv.Itoa(i + 1)}
+			idSlice = []string{lus.CodCert, "2022", "11", "22", "1030", strconv.Itoa(i + 1)}
 		}
 
 		key, err := ctx.GetStub().CreateCompositeKey(lus.CodCert, idSlice)
