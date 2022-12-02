@@ -2,6 +2,8 @@ package certificate
 
 import (
 	"fmt"
+	"strconv"
+	"strings"
 
 	lus "academic_certificates/libutils"
 	"encoding/json"
@@ -53,11 +55,19 @@ func (s *ContractCertificate) InitLedger(ctx contractapi.TransactionContextInter
 	}
 
 	for i, asset := range assets {
-		key, err := ctx.GetStub().CreateCompositeKey(lus.CodCert, []string{"2022", "11", "22", "10302", string(rune(i + 1))})
+
+		var idSlice = make([]string, 0)
+		if i < 9 {
+			idSlice = []string{"2022", "11", "22", "10300", strconv.Itoa(i + 1)}
+		} else {
+			idSlice = []string{"2022", "11", "22", "1030", strconv.Itoa(i + 1)}
+		}
+
+		key, err := ctx.GetStub().CreateCompositeKey(lus.CodCert, idSlice)
 		if err != nil {
 			return err
 		}
-		asset.ID = "2022112210302" + string(rune(i+1))
+		asset.ID = strings.Join(idSlice, "") //"2022112210302" + string(rune(i+1))
 
 		assetJSON, err := json.Marshal(asset)
 		if err != nil {
