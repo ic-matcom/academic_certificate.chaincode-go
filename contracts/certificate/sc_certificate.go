@@ -55,19 +55,20 @@ func (s *ContractCertificate) InitLedger(ctx contractapi.TransactionContextInter
 	}
 
 	for i, asset := range assets {
-
 		var idSlice = make([]string, 0)
 		if i < 9 {
-			idSlice = []string{lus.CodCert, "2022", "11", "22", "10300", strconv.Itoa(i + 1)}
+			var time = "10300" + strconv.Itoa(i+1)
+			idSlice = []string{"2022", "11", "22", time}
 		} else {
-			idSlice = []string{lus.CodCert, "2022", "11", "22", "1030", strconv.Itoa(i + 1)}
+			var time = "1030" + strconv.Itoa(i+1)
+			idSlice = []string{"2022", "11", "22", time}
 		}
 
 		key, err := ctx.GetStub().CreateCompositeKey(lus.CodCert, idSlice)
 		if err != nil {
 			return err
 		}
-		asset.ID = strings.Join(idSlice, "") //"2022112210302" + string(rune(i+1))
+		asset.ID = lus.CodCert + strings.Join(idSlice, "")
 
 		assetJSON, err := json.Marshal(asset)
 		if err != nil {
