@@ -57,7 +57,7 @@ func (s *ContractCertificate) InitLedger(ctx contractapi.TransactionContextInter
 		if err != nil {
 			return err
 		}
-		asset.ID = key
+		asset.ID = "2022112210302" + string(rune(i+1))
 
 		assetJSON, err := json.Marshal(asset)
 		if err != nil {
