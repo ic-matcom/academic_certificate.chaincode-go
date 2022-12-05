@@ -201,11 +201,11 @@ func (s *ContractCertificate) ValidateAsset(ctx contractapi.TransactionContextIn
 		asset.SecretaryValidating = request.Validator
 		asset.Status = SignedS
 	} else if request.ValidatorT == Dean && asset.Status == SignedS {
-		asset.SecretaryValidating = request.Validator
+		asset.DeanValidating = request.Validator
 		asset.Status = SignedSD
-	} else if request.ValidatorT == Rector && asset.Status == Valid {
-		asset.SecretaryValidating = request.Validator
-		asset.Status = SignedSD
+	} else if request.ValidatorT == Rector && asset.Status == SignedSD {
+		asset.RectorValidating = request.Validator
+		asset.Status = Valid
 	} else {
 		return fmt.Errorf(lus.ErrorInconsistentValidation)
 	}
