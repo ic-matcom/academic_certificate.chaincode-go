@@ -7,7 +7,7 @@ import (
 
 func (cio *ContractCommon) GetHistory(ctx contractapi.TransactionContextInterface, request *lus.GetHistoryRequest) (lus.HistoryQueryResponse, error) {
 	response := lus.HistoryQueryResponse{Response: make([]lus.HistoryAssetPayload, 0)}
-	keyAsset, err := lus.CompositeKeyFromID(ctx.GetStub(), request.DocType, request.ID)
+	keyAsset, _, err := lus.CompositeKeyFromID(ctx.GetStub(), request.DocType, request.ID)
 	if err != nil {
 		return response, err
 	}

@@ -121,22 +121,26 @@ func ValidateID(codAsset, iD string) error {
 // 	CompositeKey format: objectType +  MONTH + DAY + TIME (hour+minute+second)
 //
 // 	note: the objectType = COD is assumed
-func CompositeKeyFromID(stub shim.ChaincodeStubInterface, objectType string, assetID string) (string, error) {
+func CompositeKeyFromID(stub shim.ChaincodeStubInterface, objectType string, assetID string) (string, *KeyResponse, error) {
 	responseKey, err := BuildKeyFromID(objectType, assetID)
 	if err != nil {
-		return "", err
+		return "", nil, err
 	}
 
 	compositeKey, err := CreateCompositeKeyTo(stub, objectType, responseKey)
 	if err != nil {
-		return "", err
+		return "", nil, err
 	} else if compositeKey == "" {
-		return "", fmt.Errorf("error creating compound key for: %v", assetID)
+		return "", nil, fmt.Errorf("error creating compound key for: %v", assetID)
 	}
 
-	return compositeKey, nil
+	return compositeKey, responseKey, nil
 }
 
 func CreateCompositeKeyTo(stub shim.ChaincodeStubInterface, objectType string, key *KeyResponse) (string, error) {
 	return stub.CreateCompositeKey(objectType, []string{key.YearString, key.MonthString, key.DayString, key.TimeString})
+}
+
+func CreateCompositeKeyToDelete(stub shim.ChaincodeStubInterface, objectType string, key *KeyResponse) (string, error) {
+	return stub.CreateCompositeKey(DocTypeDeleted, []string{objectType, key.YearString, key.MonthString, key.DayString, key.TimeString})
 }
